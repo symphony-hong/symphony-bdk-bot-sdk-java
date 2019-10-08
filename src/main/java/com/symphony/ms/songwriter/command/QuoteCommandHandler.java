@@ -21,24 +21,26 @@ public class QuoteCommandHandler extends CommandHandler {
   @Override
   protected Predicate<String> getCommandMatcher() {
     return Pattern
-        .compile("^@"+ getBotName() + " \\/rate")
+        .compile("^@"+ getBotName() + " \\/quote")
         .asPredicate();
   }
 
   @Override
   public void handle(MessageEvent command, SymphonyMessage commandResponse) {
-    String currency = command.getMessage().split(" \\/rate ")[1];
+    String currency = command.getMessage().split(" \\/quote ")[1];
 
     if (currency != null) {
-      RestResponse<QuoteResponse> response = restClient.getRequest(String.format(quoteRequest, currency), QuoteResponse.class);
+      RestResponse<QuoteResponse> response = restClient.getRequest(
+          String.format(quoteRequest, currency), QuoteResponse.class);
 
       if (response.getStatus() == 200) {
-
         QuoteResponse test = (QuoteResponse)response.getBody();
-
         InternalQuote iQuote = new InternalQuote(test.getQuote());
-
-        commandResponse.setEnrichedTemplateFile("quote-result.ftl", iQuote, "com.symphony.ms.devtools.currencyQuote", iQuote, "1.0");
+        commandResponse.setEnrichedTemplateFile("quote-result.ftl",
+            iQuote,
+            "com.symphony.ms.devtools.currencyQuote",
+            iQuote,
+            "1.0");
       }
     }
 
