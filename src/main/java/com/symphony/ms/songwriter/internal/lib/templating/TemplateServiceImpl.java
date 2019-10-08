@@ -7,10 +7,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.xml.bind.DatatypeConverter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.symphony.ms.songwriter.internal.lib.jsonmapper.JsonMapper;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -33,7 +37,7 @@ public class TemplateServiceImpl implements TemplateService {
   @Override
   public String processTemplateFile(String templateFile, Object data) {
     try {
-      Template template = freemarkerConfig.getTemplate(templateFile, "UTF-8");
+      Template template = freemarkerConfig.getTemplate(templateFile);
       StringWriter sw = new StringWriter();
       template.process(jsonMapper.objectToMap(data), sw);
 

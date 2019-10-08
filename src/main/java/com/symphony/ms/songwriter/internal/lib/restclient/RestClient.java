@@ -1,6 +1,7 @@
 package com.symphony.ms.songwriter.internal.lib.restclient;
 
 import java.util.Map;
+
 import com.symphony.ms.songwriter.internal.lib.restclient.model.RestResponse;
 
 public interface RestClient {
@@ -12,6 +13,7 @@ public interface RestClient {
    */
   <T> RestResponse<T> getRequest(String url);
 
+  <T> RestResponse<T> getRequest(String url, Class<T> clazz);
   /**
    * Perform a get request
    * @param url destination url

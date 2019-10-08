@@ -1,6 +1,7 @@
 package com.symphony.ms.songwriter.internal.lib.restclient;
 
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,6 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
 import com.symphony.ms.songwriter.internal.lib.restclient.model.RestResponse;
 
 public class RestClientImpl implements RestClient {
@@ -22,6 +24,27 @@ public class RestClientImpl implements RestClient {
 
   public RestClientImpl(RestTemplate restTemplate) {
     this.restTemplate = restTemplate;
+  }
+
+  // TODO: fix RestClient -> ParameterizedTypeReference + exchange do not work with generic
+  public <T> RestResponse<T> getRequest(String url, Class<T> clazz) {
+    RestResponse<T> response = null;
+    try {
+      HttpEntity<?> httpEntity = new HttpEntity<>(convertHeaders(null));
+      ResponseEntity<T> re = restTemplate.exchange(url, HttpMethod.GET, httpEntity, clazz);
+      T body = re.hasBody() ? re.getBody() : null;
+      response = new RestResponse<>(body,
+          re.getHeaders().toSingleValueMap(), re.getStatusCodeValue());
+    } catch (HttpClientErrorException | HttpServerErrorException reqEx) {
+      response = new RestResponse<>(
+          reqEx.getResponseHeaders().toSingleValueMap(),
+          reqEx.getRawStatusCode());
+    } catch (RestClientException rce) {
+      throw new RestClientConnectionException();
+    }
+
+    return response;
+
   }
 
   @Override
